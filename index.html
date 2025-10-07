@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Habit Tracker | Build Better Habits</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --secondary: #3f37c9;
+            --success: #4cc9f0;
+            --danger: #f72585;
+            --warning: #f8961e;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+            --light-gray: #e9ecef;
+            --border-radius: 8px;
+            --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f7fb;
+            color: var(--dark);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 1rem 0;
+            box-shadow: var(--box-shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .logo i {
+            font-size: 1.8rem;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 20px;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 5px 10px;
+            border-radius: var(--border-radius);
+            transition: var(--transition);
+        }
+
+        nav a:hover, nav a.active {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        main {
+            padding: 2rem 0;
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 1.5rem;
+            transition: var(--transition);
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--light-gray);
+        }
+
+        .card-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-weight: 500;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--secondary);
+        }
+
+        .btn-success {
+            background-color: var(--success);
+            color: white;
+        }
+
+        .btn-danger {
+            background-color: var(--danger);
+            color: white;
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+        }
+
+        .btn-outline:hover {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .habits-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .habit-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background-color: var(--light);
+            border-radius: var(--border-radius);
+            border-left: 4px solid var(--primary);
+        }
+
+        .habit-info h3 {
+            margin-bottom: 5px;
+        }
+
+        .habit-meta {
+            display: flex;
+            gap: 15px;
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+
+        .habit-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .streak {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: var(--warning);
+            font-weight: 600;
+        }
+
+        .calendar-container {
+            grid-column: 1 / -1;
+        }
+
+        .calendar {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+            margin-top: 1rem;
+        }
+
+        .calendar-header {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+            margin-bottom: 10px;
+            text-align: center;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .calendar-day {
+            aspect-ratio: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--light);
+            border-radius: var(--border-radius);
+            padding: 5px;
+            position: relative;
+        }
+
+        .calendar-day.today {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .calendar-day.completed {
+            background-color: var(--success);
+            color: white;
+        }
+
+        .calendar-day.missed {
+            background-color: var(--danger);
+            color: white;
+        }
+
+        .calendar-day .day-number {
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .calendar-day .habit-dots {
+            display: flex;
+            gap: 2px;
+            margin-top: 2px;
+        }
+
+        .habit-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background-color: var(--gray);
+        }
+
+        .habit-dot.completed {
+            background-color: white;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: white;
+            border-radius: var(--border-radius);
+            width: 90%;
+            max-width: 500px;
+            padding: 2rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--gray);
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--light-gray);
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .checkbox-group {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 1rem;
+        }
+
+        .stat-card {
+            text-align: center;
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            background: white;
+            box-shadow: var(--box-shadow);
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        .success-rate {
+            color: var(--success);
+        }
+
+        .current-streak {
+            color: var(--warning);
+        }
+
+        .longest-streak {
+            color: var(--primary);
+        }
+
+        footer {
+            background-color: var(--dark);
+            color: white;
+            padding: 2rem 0;
+            margin-top: 3rem;
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 20px;
+        }
+
+        .footer-links a {
+            color: white;
+            text-decoration: none;
+        }
+
+        @media (max-width: 768px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+
+            .header-content {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            nav ul {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .footer-content {
+                flex-direction: column;
+                gap: 20px;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-fire"></i>
+                    <span>HabitTracker</span>
+                </div>
+                <nav>
+                    <ul>
+                        <li><a href="#" class="active">Dashboard</a></li>
+                        <li><a href="#">Calendar</a></li>
+                        <li><a href="#">Analytics</a></li>
+                        <li><a href="#">Settings</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="dashboard">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Today's Habits</h2>
+                    <button class="btn btn-primary" id="add-habit-btn">
+                        <i class="fas fa-plus"></i> Add Habit
+                    </button>
+                </div>
+                <div class="habits-list" id="habits-list">
+                    <!-- Habit items will be dynamically added here -->
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Streaks & Stats</h2>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value success-rate">78%</div>
+                        <div class="stat-label">Success Rate</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value current-streak">12</div>
+                        <div class="stat-label">Current Streak</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value longest-streak">30</div>
+                        <div class="stat-label">Longest Streak</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">15</div>
+                        <div class="stat-label">Total Habits</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card calendar-container">
+                <div class="card-header">
+                    <h2 class="card-title">Monthly Progress</h2>
+                    <div>
+                        <button class="btn btn-outline">
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
+                        <span style="margin: 0 10px;">June 2023</span>
+                        <button class="btn btn-outline">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="calendar-header">
+                    <div>Sun</div>
+                    <div>Mon</div>
+                    <div>Tue</div>
+                    <div>Wed</div>
+                    <div>Thu</div>
+                    <div>Fri</div>
+                    <div>Sat</div>
+                </div>
+                <div class="calendar" id="calendar">
+                    <!-- Calendar days will be dynamically added here -->
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Add Habit Modal -->
+    <div class="modal" id="add-habit-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Add New Habit</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <form id="add-habit-form">
+                <div class="form-group">
+                    <label for="habit-name">Habit Name</label>
+                    <input type="text" id="habit-name" class="form-control" placeholder="e.g., Exercise, Read, Meditate" required>
+                </div>
+                <div class="form-group">
+                    <label for="habit-category">Category</label>
+                    <select id="habit-category" class="form-control">
+                        <option value="health">Health & Fitness</option>
+                        <option value="learning">Learning</option>
+                        <option value="productivity">Productivity</option>
+                        <option value="mindfulness">Mindfulness</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Schedule</label>
+                    <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="schedule-daily" checked>
+                            <label for="schedule-daily">Daily</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="schedule-weekdays">
+                            <label for="schedule-weekdays">Weekdays</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="schedule-weekend">
+                            <label for="schedule-weekend">Weekend</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="reminder-time">Reminder Time (Optional)</label>
+                    <input type="time" id="reminder-time" class="form-control">
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">Add Habit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="logo">
+                    <i class="fas fa-fire"></i>
+                    <span>HabitTracker</span>
+                </div>
+                <div class="footer-links">
+                    <a href="#">About</a>
+                    <a href="#">Privacy</a>
+                    <a href="#">Terms</a>
+                    <a href="#">Contact</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+    const API_BASE_URL = 'http://localhost:8000'; // Change this to your backend URL
+
+    // DOM Elements
+    const habitsList = document.getElementById('habits-list');
+    const calendar = document.getElementById('calendar');
+    const addHabitBtn = document.getElementById('add-habit-btn');
+    const addHabitModal = document.getElementById('add-habit-modal');
+    const closeModal = document.querySelector('.close-modal');
+    const addHabitForm = document.getElementById('add-habit-form');
+
+    // Initialize the app
+    async function init() {
+        await renderHabits();
+        renderCalendar();
+        setupEventListeners();
+        await updateStats();
+    }
+
+    // API Functions
+    async function fetchHabits() {
+        try {
+            const response = await fetch(`${API_BASE_URL}/habits`);
+            if (!response.ok) throw new Error('Failed to fetch habits');
+            return await response.json();
+        } catch (error) {
+            console.error('Error fetching habits:', error);
+            return [];
+        }
+    }
+
+    async function createHabit(habitData) {
+        try {
+            const response = await fetch(`${API_BASE_URL}/habits`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(habitData),
+            });
+            if (!response.ok) throw new Error('Failed to create habit');
+            return await response.json();
+        } catch (error) {
+            console.error('Error creating habit:', error);
+            throw error;
+        }
+    }
+
+    async function completeHabit(habitId) {
+        try {
+            const response = await fetch(`${API_BASE_URL}/habits/${habitId}/complete`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+            if (!response.ok) throw new Error('Failed to complete habit');
+            return await response.json();
+        } catch (error) {
+            console.error('Error completing habit:', error);
+            throw error;
+        }
+    }
+
+    async function deleteHabit(habitId) {
+        try {
+            const response = await fetch(`${API_BASE_URL}/habits/${habitId}`, {
+                method: 'DELETE',
+            });
+            if (!response.ok) throw new Error('Failed to delete habit');
+            return await response.json();
+        } catch (error) {
+            console.error('Error deleting habit:', error);
+            throw error;
+        }
+    }
+
+    async function updateStats() {
+        try {
+            const [successRate, currentStreak, longestStreak] = await Promise.all([
+                fetch(`${API_BASE_URL}/stats/success-rate`).then(r => r.json()),
+                fetch(`${API_BASE_URL}/stats/current-streak`).then(r => r.json()),
+                fetch(`${API_BASE_URL}/stats/longest-streak`).then(r => r.json())
+            ]);
+
+            // Update the stats in the UI
+            document.querySelector('.success-rate').textContent = `${successRate}%`;
+            document.querySelector('.current-streak').textContent = currentStreak;
+            document.querySelector('.longest-streak').textContent = longestStreak;
+            
+            // Update total habits count
+            const habits = await fetchHabits();
+            document.querySelector('.stat-card:last-child .stat-value').textContent = habits.length;
+        } catch (error) {
+            console.error('Error updating stats:', error);
+        }
+    }
+
+    // Render habits list
+    async function renderHabits() {
+        const habits = await fetchHabits();
+        habitsList.innerHTML = '';
+        
+        habits.forEach(habit => {
+            const habitItem = document.createElement('div');
+            habitItem.className = 'habit-item';
+            habitItem.innerHTML = `
+                <div class="habit-info">
+                    <h3>${habit.name}</h3>
+                    <div class="habit-meta">
+                        <span>${habit.category}</span>
+                        <span>${habit.schedule}</span>
+                        ${habit.reminder_time ? `<span><i class="far fa-bell"></i> ${habit.reminder_time}</span>` : ''}
+                    </div>
+                </div>
+                <div class="habit-actions">
+                    <div class="streak">
+                        <i class="fas fa-fire"></i> ${habit.streak}
+                    </div>
+                    <button class="btn btn-success complete-btn" data-id="${habit.id}">
+                        <i class="fas fa-check"></i>
+                    </button>
+                    <button class="btn btn-outline edit-btn" data-id="${habit.id}">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="btn btn-danger delete-btn" data-id="${habit.id}">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            `;
+            habitsList.appendChild(habitItem);
+        });
+    }
+
+    // Render calendar (this would need to be enhanced to use actual completion data)
+    function renderCalendar() {
+        calendar.innerHTML = '';
+        
+        // Get current date info
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = today.getMonth();
+        const firstDay = new Date(year, month, 1).getDay();
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+        
+        // Add empty cells for days before the first day of the month
+        for (let i = 0; i < firstDay; i++) {
+            const emptyDay = document.createElement('div');
+            emptyDay.className = 'calendar-day';
+            calendar.appendChild(emptyDay);
+        }
+        
+        // Add days of the month
+        for (let day = 1; day <= daysInMonth; day++) {
+            const dayElement = document.createElement('div');
+            dayElement.className = 'calendar-day';
+            
+            // Mark today
+            if (day === today.getDate() && month === today.getMonth() && year === today.getFullYear()) {
+                dayElement.classList.add('today');
+            }
+            
+            // Randomly mark some days as completed or missed for demo
+            // In production, this would use actual completion data from the API
+            const randomStatus = Math.random();
+            if (randomStatus < 0.3) {
+                dayElement.classList.add('completed');
+            } else if (randomStatus < 0.4) {
+                dayElement.classList.add('missed');
+            }
+            
+            dayElement.innerHTML = `
+                <div class="day-number">${day}</div>
+                <div class="habit-dots">
+                    <div class="habit-dot ${Math.random() > 0.5 ? 'completed' : ''}"></div>
+                    <div class="habit-dot ${Math.random() > 0.5 ? 'completed' : ''}"></div>
+                    <div class="habit-dot ${Math.random() > 0.5 ? 'completed' : ''}"></div>
+                </div>
+            `;
+            
+            calendar.appendChild(dayElement);
+        }
+    }
+
+    // Set up event listeners
+    function setupEventListeners() {
+        // Add habit button
+        addHabitBtn.addEventListener('click', () => {
+            addHabitModal.style.display = 'flex';
+        });
+        
+        // Close modal
+        closeModal.addEventListener('click', () => {
+            addHabitModal.style.display = 'none';
+        });
+        
+        // Close modal when clicking outside
+        window.addEventListener('click', (e) => {
+            if (e.target === addHabitModal) {
+                addHabitModal.style.display = 'none';
+            }
+        });
+        
+        // Add habit form submission
+        addHabitForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const name = document.getElementById('habit-name').value;
+            const category = document.getElementById('habit-category').value;
+            const reminder = document.getElementById('reminder-time').value;
+            
+            try {
+                // Create new habit via API
+                await createHabit({
+                    name,
+                    category,
+                    schedule: "daily", // Simplified for demo
+                    reminder_time: reminder || null
+                });
+                
+                await renderHabits();
+                await updateStats();
+                addHabitModal.style.display = 'none';
+                addHabitForm.reset();
+            } catch (error) {
+                alert('Failed to create habit. Please try again.');
+            }
+        });
+        
+        // Handle habit actions (complete, edit, delete)
+        habitsList.addEventListener('click', async (e) => {
+            if (e.target.closest('.complete-btn')) {
+                const id = e.target.closest('.complete-btn').dataset.id;
+                await handleCompleteHabit(id);
+            } else if (e.target.closest('.edit-btn')) {
+                const id = e.target.closest('.edit-btn').dataset.id;
+                await handleEditHabit(id);
+            } else if (e.target.closest('.delete-btn')) {
+                const id = e.target.closest('.delete-btn').dataset.id;
+                await handleDeleteHabit(id);
+            }
+        });
+    }
+
+    // Handle complete habit
+    async function handleCompleteHabit(id) {
+        try {
+            const result = await completeHabit(id);
+            await renderHabits();
+            await updateStats();
+            
+            // Show success message
+            alert(`Great job! You've completed this habit! Current streak: ${result.streak}`);
+        } catch (error) {
+            alert('Failed to complete habit. Please try again.');
+        }
+    }
+
+    // Handle edit habit
+    async function handleEditHabit(id) {
+        // In a real app, we would populate a form with the habit data
+        alert('Edit functionality would be implemented here');
+    }
+
+    // Handle delete habit
+    async function handleDeleteHabit(id) {
+        if (confirm('Are you sure you want to delete this habit?')) {
+            try {
+                await deleteHabit(id);
+                await renderHabits();
+                await updateStats();
+            } catch (error) {
+                alert('Failed to delete habit. Please try again.');
+            }
+        }
+    }
+
+    // Initialize the app
+    document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>
